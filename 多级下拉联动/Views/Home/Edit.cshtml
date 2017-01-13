@@ -1,0 +1,49 @@
+﻿@model 多级下拉联动.Models.ProvinceViewModel
+@{
+    ViewBag.Title = "Edit";
+}
+<script src="~/Scripts/jquery-1.10.2.js"></script>
+<script type="text/javascript">
+    $(function () {
+        //GetProvince(); //加载省份
+        GetCity();
+        //省份变动，加载城市
+        $("#Province").change(function () {
+            GetCity();
+        });
+    });
+    function GetProvince() {
+        //        $("#Province").empty();
+        $.getJSON(
+            "/Home/GetProvincelist",
+            function (data) {
+
+                $.each(data, function (i, item) {
+                    $("<option></option>").val(item["PID"]).text(item["ProvinceName"]).appendTo($("#Province"));
+                })
+            });
+        //            GetCity();
+    }
+    function GetCity() {
+        $("#City").empty();
+        $.getJSON(
+        "/Home/GetCitylist",
+        { pid: $("#Province").val() },
+        function (data) {
+            $.each(data, function (i, item) {
+                $("<option></option>").val(item["Value"]).text(item["Text"]).appendTo($("#City"));
+
+            })
+        });
+    }
+</script>
+<div style="margin:50px 0">
+    <span>省份：</span>
+    @Html.DropDownListFor(model => model.PID, ViewBag.ProvinceList as IEnumerable<SelectListItem>, "＝请选择＝", new { @class = "form-control", id = "Province" })
+
+
+    <span>市：</span>
+    @Html.DropDownListFor(model => model.CID,ViewBag.CityList  as IEnumerable<SelectListItem>, "＝请选择＝", new { @class = "form-control", id = "City" })
+</div>
+
+
